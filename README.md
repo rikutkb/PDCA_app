@@ -43,3 +43,69 @@ Solution
 
 
 
+DB設計
+User
+| 型 | カラム |詳細
+----|----|----
+| user_id | integer |ユーザid primay|
+| screen_name | string |primary 固有の名前|
+| name | string |名前|
+
+Goal
+| 型 | カラム |詳細
+----|----|----
+| goal_id | integer |goalid primay|
+| name | string |目標の名前|
+| period | date |期日|
+| current | text |現状|
+| gap | text |現状とのギャップ|
+| unit | string |単位|
+
+
+Goal_Log
+| 型 | カラム |詳細
+----|----|----
+| goal_id | int |goalid primay|
+| date | date |実行日|
+| log | int |結果|
+
+Goal_User
+| 型 | カラム |詳細
+----|----|----
+| user_id | integer |ユーザid primay foreign|
+| goal_id | hash |primary foreign|
+
+
+Mission
+| 型 | カラム |詳細
+----|----|----
+| mission_id | hash |missionid primay|
+| goal_id | hash | foreign|
+| name | text |課題名|
+| impact | int |インパクト|
+| easy | int |手軽さ|
+| time | int |時間|
+| do | bool |実行するか|
+
+Solution
+| 型 | カラム |詳細
+----|----|----
+| solution_id | hash |solution_id primay|
+| mission_id | hash | foreign|
+| name | text |解決策名|
+| impact | int |インパクト|
+| easy | int |手軽さ|
+| time | int |時間|
+| do | bool |実行するか|
+
+Solution_Log
+| 型 | カラム |詳細
+----|----|----
+| solution_id | hash |solution_id primay foreign|
+| date | date | primary|
+
+Solution_Frequency
+| 型 | カラム |詳細
+----|----|----
+| solution_id | hash |solution_id primay foreign|
+| day | int | primary (1~7)(曜日）|
