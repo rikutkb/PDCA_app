@@ -11,6 +11,10 @@ GOAL
 | POST | api/v1/Goal/:GoalId |Goalの編集|
 | GET | api/v1/Goal/:GoalId/users |ユーザの取得|
 | GET | api/v1/Goal/:GoalId/owners |ownersの取得|
+| POST | api/v1/Goal/:GoalId/users/:userid |ユーザの追加|
+| POST | api/v1/Goal/:GoalId/owners/:userid |ownersの追加|
+
+
 
 ajax
 課題(Mission)
