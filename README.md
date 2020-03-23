@@ -13,6 +13,8 @@ GOAL
 | GET | api/v1/Goal/:GoalId/owners |ownersの取得|
 | POST | api/v1/Goal/:GoalId/users/:userid |ユーザの追加|
 | POST | api/v1/Goal/:GoalId/owners/:userid |ownersの追加|
+| DELETE | api/v1/Goal/:GoalId/users/:userid |ユーザの削除|
+| DELETE | api/v1/Goal/:GoalId/owners/:userid |ownersの削除|
 
 
 
