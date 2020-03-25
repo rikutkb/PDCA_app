@@ -17,6 +17,11 @@ const User=loader.database.define('users',{
     type:Sequelize.STRING,
     allowNull:false,
     unique:true
+  },
+  mail:{
+    type:Sequelize.STRING,
+    allowNull:true,
+    unique:true
   }
 },{
   freezeTableName:true,

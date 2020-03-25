@@ -3,16 +3,11 @@
 const loader=require('./sequelize-loader');
 const Sequelize=loader.Sequelize;
 
-const GoalUser=loader.database.define('goals',{
-  goal_id:{
-    type:Sequelize.UUIDV4,
-    primaryKey:true,
-    allowNull:false
-  },
-  user_id:{
+const GoalUser=loader.database.define('goaluser',{
+  id:{
     type:Sequelize.INTEGER,
     primaryKey:true,
-    allowNull:false
+    autoIncrement:true
   },
   owner:{
     type:Sequelize.BOOLEAN,
