@@ -5,7 +5,7 @@ const Sequelize=loader.Sequelize;
 
 const Solution=loader.database.define('solutions',{
   solution_id:{
-    type:Sequelize.UUIDV4,
+    type:Sequelize.UUID,
     primaryKey:true,
     allowNull:false
   },
@@ -14,7 +14,7 @@ const Solution=loader.database.define('solutions',{
     allowNull:false
   },
   mission_id:{
-    type:Sequelize.UUIDV4,
+    type:Sequelize.UUID,
     allowNull:false
   },
   impact:{

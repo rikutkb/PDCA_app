@@ -5,7 +5,7 @@ const Sequelize=loader.Sequelize;
 
 const Mission=loader.database.define('missions',{
   mission_id:{
-    type:Sequelize.UUIDV4,
+    type:Sequelize.UUID,
     primaryKey:true,
     allowNull:false
   },
@@ -14,7 +14,7 @@ const Mission=loader.database.define('missions',{
     allowNull:false
   },
   goal_id:{
-    type:Sequelize.UUIDV4,
+    type:Sequelize.UUID,
     allowNull:false
   },
   impact:{

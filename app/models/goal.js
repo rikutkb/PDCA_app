@@ -5,7 +5,7 @@ const Sequelize=loader.Sequelize;
 
 const Goal=loader.database.define('goals',{
   goal_id:{
-    type:Sequelize.UUIDV4,
+    type:Sequelize.UUID,
     primaryKey:true,
     allowNull:false
   },
@@ -14,7 +14,7 @@ const Goal=loader.database.define('goals',{
     allowNull:false
   },
   period:{
-    type:Sequelize.DATE,
+    type:Sequelize.STRING,
     allowNull:false
   },
   current:{
@@ -29,22 +29,12 @@ const Goal=loader.database.define('goals',{
     type:Sequelize.STRING,
     allowNull:true
   },
-  createdBy:{
-    type:Sequelize.INTEGER,
-    allowNull:false
-  },
   updatedAt:{
     type:Sequelize.DATE,
     allowNull:false
   }
 },{
   freezeTableName:true,
-  timestamps:false,
-  indexes:[
-    {
-      fields:['createdBy']
-    }
-  ]
 }
 )
 

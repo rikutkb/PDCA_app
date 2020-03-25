@@ -10,10 +10,31 @@ var GoalUser=require('./models/goal_user');
 var SolutionFrequency=require('./models/solution_frequency');
 var SolutionLog=require('./models/solution_log');
 
-User.belongsToMany(Goal,{through:GoalUser});
-Goal.belongsToMany(User,{through:GoalUser});
+/*
+GoalLog.sync();
+Mission.sync();
+SolutionFrequency.sync();
+Solution.sync();
+SolutionLog.sync();
+*/
+//データベース消去後起動すると一回エラーが出るが、もう一回起動する
 
+
+User.sync().then(()=>{
+  GoalUser.belongsTo(User,{foreignKey:'user_id'});
+
+});
+
+Goal.sync().then(()=>{
+  GoalUser.belongsTo(Goal,{foreignKey:'goal_id'});
+
+});
+GoalUser.sync();
+
+
+/*
 Goal.hasMany(Mission,{foreignKey:'goal_id',sourceKey:'goal_id'});
+
 Mission.belongsTo(Goal,{foreignKey:'goal_id',targetKey:'goal_id'});
 Goal.hasMany(GoalLog,{foreignKey:'goal_id',sourceKey:'goal_id'});
 GoalLog.belongsTo(Goal,{foreignKey:'goal_id',targetKey:'goal_id'});
@@ -27,6 +48,7 @@ SolutionLog.belongsTo(Solution,{foreignKey:'solution_id',targetKey:'solution_id'
 Solution.hasMany(SolutionFrequency,{foreignKey:'solution_id',sourceKey:'solution_id'});
 SolutionFrequency.belongsTo(Solution,{foreignKey:'solution_id',targetKey:'solution_id'});
 
+*/
 
 
 app.use(bodyParser.urlencoded({ extended: true }));

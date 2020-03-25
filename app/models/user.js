@@ -5,7 +5,7 @@ const Sequelize=loader.Sequelize;
 
 const User=loader.database.define('users',{
   user_id:{
-    type:Sequelize.INTEGER,
+    type:Sequelize.UUID,
     primaryKey:true,
     allowNull:false
   },
@@ -22,6 +22,9 @@ const User=loader.database.define('users',{
     type:Sequelize.STRING,
     allowNull:true,
     unique:true
+  },
+  password:{
+    type:Sequelize.STRING
   }
 },{
   freezeTableName:true,

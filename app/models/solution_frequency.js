@@ -5,7 +5,7 @@ const Sequelize=loader.Sequelize;
 
 const SolutionFrequency=loader.database.define('solution_frequencies',{
   solution_id:{
-    type:Sequelize.UUIDV4,
+    type:Sequelize.UUID,
     primaryKey:true,
     allowNull:false
   },

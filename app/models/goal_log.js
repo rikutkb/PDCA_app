@@ -5,7 +5,7 @@ const Sequelize=loader.Sequelize;
 
 const GoalLog=loader.database.define('goal_logs',{
   goal_id:{
-    type:Sequelize.UUIDV4,
+    type:Sequelize.UUID,
     primaryKey:true,
     allowNull:false
   },
