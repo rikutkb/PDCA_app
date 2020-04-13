@@ -10,13 +10,9 @@ var GoalUser=require('./models/goal_user');
 var SolutionFrequency=require('./models/solution_frequency');
 var SolutionLog=require('./models/solution_log');
 
-/*
-GoalLog.sync();
-Mission.sync();
-SolutionFrequency.sync();
-Solution.sync();
-SolutionLog.sync();
-*/
+
+
+
 //データベース消去後起動すると一回エラーが出るが、もう一回起動する
 
 
@@ -27,28 +23,22 @@ User.sync().then(()=>{
 
 Goal.sync().then(()=>{
   GoalUser.belongsTo(Goal,{foreignKey:'goal_id'});
+  GoalLog.belongsTo(Goal,{foreignKey:'goal_id',sourceKey:'goal_id'});
+  GoalLog.sync();
+  Mission.belongsTo(Goal,{foreignKey:'goal_id',sourceKey:'goal_id'});
+  Mission.sync().then(()=>{
+    Solution.belongsTo(Mission,{foreignKey:'mission_id',sourceKey:'mission_id'});
+    Solution.sync().then(()=>{
+      SolutionLog.belongsTo(Solution,{foreignKey:'solution_id',sourceKey:'solution_id'});
+      SolutionLog.sync();
+      SolutionFrequency.belongsTo(Solution,{foreignKey:'solution_id',sourceKey:'solution_id'});
+      SolutionFrequency.sync();
+
+    })
+  })
 
 });
 GoalUser.sync();
-
-
-/*
-Goal.hasMany(Mission,{foreignKey:'goal_id',sourceKey:'goal_id'});
-
-Mission.belongsTo(Goal,{foreignKey:'goal_id',targetKey:'goal_id'});
-Goal.hasMany(GoalLog,{foreignKey:'goal_id',sourceKey:'goal_id'});
-GoalLog.belongsTo(Goal,{foreignKey:'goal_id',targetKey:'goal_id'});
-
-Mission.hasMany(Solution,{foreignKey:'mission_id',sourceKey:'mission_id'});
-Solution.belongsTo(Mission,{foreignKey:'mission_id',targetKey:'mission_id'});
-
-Solution.hasMany(SolutionLog,{foreignKey:'solution_id',sourceKey:'solution_id'});
-SolutionLog.belongsTo(Solution,{foreignKey:'solution_id',targetKey:'solution_id'});
-
-Solution.hasMany(SolutionFrequency,{foreignKey:'solution_id',sourceKey:'solution_id'});
-SolutionFrequency.belongsTo(Solution,{foreignKey:'solution_id',targetKey:'solution_id'});
-
-*/
 
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -57,8 +47,11 @@ app.use(bodyParser.json());
 var port = process.env.PORT || 8000;
 
 var v1Router = require('./routes/v1/index');
-app.use('/api/v1/', v1Router);
+
+app.use('/api/v1', v1Router);
 
 //サーバ起動
 app.listen(port);
 console.log('listen on port ' + port);
+
+module.exports=app;
