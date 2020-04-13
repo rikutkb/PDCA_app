@@ -4,7 +4,6 @@ var User=require('../../models/user');
 var Mission=require('../../models/mission');
 var uuid=require('uuid');
 var SolutionRouter=require('./solution.js');
-router.use('/:MissionId/Solution',SolutionRouter);
 
 router.post('/:GoalId/Mission',function(req,res){
   var mission_id=uuid.v4();
@@ -36,6 +35,7 @@ router.get('/:GoalId/Mission',function(req,res){
     for( var mission of missions){
       missions_.push(mission.dataValues)
     }
+
     res.status(200).json(missions_);
   })
 });
