@@ -9,8 +9,30 @@ var GoalLog=require('./models/goal_log');
 var GoalUser=require('./models/goal_user');
 var SolutionFrequency=require('./models/solution_frequency');
 var SolutionLog=require('./models/solution_log');
+var jwt=require('jsonwebtoken');
+var JwtStrategy=require('passport-jwt').Strategy;
+var ExtractJwt=require('passport-jwt').ExtractJwt;
+var passport=require('passport');
+app.use(passport.initialize());
+require('dotenv').config();
 
 
+var opts = {}
+opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+opts.secretOrKey = process.env.SECRET_KEY;
+passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
+  User.findOne({user_id: jwt_payload.sub}, function(err, user) {
+      if (err) {
+          return done(err, false);
+      }
+      if (user) {
+          return done(null, user);
+      } else {
+          return done(null, false);
+          // or you could create a new account
+      }
+  });
+}));
 
 
 //データベース消去後起動すると一回エラーが出るが、もう一回起動する
@@ -39,11 +61,16 @@ Goal.sync().then(()=>{
 
 });
 GoalUser.sync();
-
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
+app.set( 'superSecret',  process
+.env.SECRET_KEY);
 var port = process.env.PORT || 8000;
 
 var v1Router = require('./routes/v1/index');

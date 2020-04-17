@@ -6,13 +6,48 @@ var GoalUser=require('../../models/goal_user');
 const uuid=require('uuid');
 var webclient = require("request");
 
-router.get('/',function(req,res){
-  var user=req.body.user;
-  
-  res.json({
-    message:"hello,world"
-  });
+function FindGoals (goal_user){
+    Goal.findOne({
+      where:{
+        goal_id:goal_user.goal_id
+      }
+    }).then((goal)=>{
+      console.log(goal.dataValues);
+      return goal.dataValues;
+    })
+
+}
+
+router.get('/',(req,res)=>{
+  var user="783da68a-918f-48dd-b693-3543f31831e8";//req.body.user;
+  var promises=[];
+  var goals=[];
+
+    GoalUser.findAll({
+      where:{
+        user_id:user
+      }
+    }).then((goalusers)=>{
+      for(var G of goalusers){
+        promises.push(Goal.findOne({
+          where:{
+            goal_id:G.goal_id
+          }
+        }).then((goal)=>{
+          goals.push(goal.dataValues);
+        })
+        )
+      }
+      Promise.all(promises).then(()=>{
+        res.json({goals:goals})
+      })
+    }).catch((error)=>{
+      console.error(error);
+    })
+
+
 });
+
 
 router.post('/',function(req,res){
   var user_id=req.body.user_id;
@@ -37,10 +72,9 @@ router.post('/',function(req,res){
         user_id:user_id,
         goal_id:goalId
       }).then((goaluser)=>{
-        res.json(goaluser);
+        res.json(goaluser.dataValues);
       })
     })
-
   }else{
     res.json({
       status:'fail'
@@ -57,20 +91,10 @@ router.get('/:GoalId',function(req,res){
       goal_id:goal_id
     }
   }).then((goal)=>{
-    var url_=process.env.URL_PATH+"/api/v1/Goal/"+goal_id+"/Mission"
-    webclient.get(url_, function(err, res_, body) {
-  if (err) {
-    console.log('Error: ' + err.message);
-    return;
-  }
-  console.log(JSON.parse(body));
-  
-  var result={goal:goal,missions:JSON.parse(body)}
-  console.log(result);
+  var result={goal:goal.dataValues}
   res.json(result);
   });
 
-  })
   
 });
 router.post('/:GoalId',function(req,res){
@@ -85,7 +109,7 @@ router.post('/:GoalId',function(req,res){
     updatedAt
   }).then((goal)=>{
 
-    res.json(goal);
+    res.json(goal.dataValues);
   })
 
 });
@@ -135,7 +159,7 @@ router.post('/:GoalId/users/:userId',function(req,res){
     user_id:userId,
     owner:owner
   }).then((goaluser)=>{
-    res.json(goaluser);
+    res.json(goaluser.dataValues);
   })
 });
 router.post('/:GoalId/owners/:userId',function(req,res){
@@ -148,7 +172,7 @@ router.post('/:GoalId/owners/:userId',function(req,res){
     user_id:userId,
     owner:owner
   }).then((goaluser)=>{
-    res.json(goaluser);
+    res.json(goaluser.dataValues);
   })
 })
 router.delete('/:GoalId/users/:userId',function(req,res){

@@ -21,20 +21,32 @@ router.post('/:GoalId/Mission/:MissionId/Solution',function(req,res){
     do:req.body.do,
     updatedAt
   }).then((solution)=>{
-    res.json(solution);
+    res.json(solution.dataValues);
   })
 })
 
 router.get('/:GoalId/Mission/:MissionId/Solution',function(req,res){
   var goal_id=req.params.GoalId;
   var mission_id=req.params.MissionId;
-  Solution.findAll({
+  Mission.findOne({
     where:{
       mission_id:mission_id
     }
-  }).then((solutions)=>{
-    res.json(solutions);
+  }).then((mission)=>{
+    Solution.findAll({
+      where:{
+        mission_id:mission_id
+      }
+    }).then((solutions)=>{
+      var solutions_=[];
+      for(var solution of solutions){
+        solutions_.push(solution.dataValues)
+      }
+      var result={mission:mission.dataValues,solutions:solutions_}
+      res.json(result);
+    })
   })
+
 
 
 });
@@ -53,7 +65,7 @@ router.post('/:GoalId/Mission/:MissionId/Solution/:SolutionId',function(req,res)
     do:req.body.mission.do,
     updatedAt
   }).then((solution)=>{
-    res.json(solution);
+    res.json(solution.dataValues);
   })  
 })
 
