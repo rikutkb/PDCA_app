@@ -12,27 +12,10 @@ var SolutionLog=require('./models/solution_log');
 var jwt=require('jsonwebtoken');
 var JwtStrategy=require('passport-jwt').Strategy;
 var ExtractJwt=require('passport-jwt').ExtractJwt;
-var passport=require('passport');
-app.use(passport.initialize());
 require('dotenv').config();
 
 
-var opts = {}
-opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-opts.secretOrKey = process.env.SECRET_KEY;
-passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
-  User.findOne({user_id: jwt_payload.sub}, function(err, user) {
-      if (err) {
-          return done(err, false);
-      }
-      if (user) {
-          return done(null, user);
-      } else {
-          return done(null, false);
-          // or you could create a new account
-      }
-  });
-}));
+
 
 
 //データベース消去後起動すると一回エラーが出るが、もう一回起動する
