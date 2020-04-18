@@ -10,41 +10,48 @@ class Authenticator{
   static initialize(app){
     app.use(passport.initialize());
 
-
-
   }
   static SetStrategy(){
-    var opts = {}
-    opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-    opts.secretOrKey = process.env.SECRET_KEY;
+    var opts = {
+      jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('jwt'),
+      // The secret that was used to sign the JWT
+      secretOrKey: process.env.SECRET_KEY,
+      // The issuer stored in the JW
+    }
     passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
-      User.findOne({user_id: jwt_payload.sub}, function(err, user) {
-          if (err) {
-              return done(err, false);
-          }
-          if (user) {
-              return done(null, user);
-          } else {
-              return done(null, false);
-              // or you could create a new account
-          }
-      });
+
+      console.log('jwt received'+jwt_payload);
+      User.findOne({
+        where:{
+          user_id:jwt_payload.user_id
+        }
+      }).then((user)=>{
+        if(user){
+          done(null,user);
+        }else{
+          done(null,false);
+        }
+      }).catch(err=>{
+        return done(err,false);
+      })
     }));
   }
 
   static authenticate(req,res,next){
-
-  }
-
-  static isAuthenticated(req,res,next){
-    if(req.isAuthenticated()){
-      return next();
-    }else{
-      res.status(401).json({
-        error:'ログインしてください'
-      })
+    passport.authenticate('jwt',{session:false}),function(req,res){
+      res.send(req.user.profile);
     }
   }
+
+   gererateToken(userid){
+    var token=jwt.sign({id:userid},config.SECRET_KEY,{
+      expiresIn:60000
+    })
+    return token;
+  }
+  
+
 }
 
-module.exports=Authenticator;
+module.exports.auth=Authenticator;
+module.exports.passport=passport;

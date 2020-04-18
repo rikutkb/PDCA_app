@@ -6,21 +6,19 @@ var missionRouter=require('./mission');
 var solutionRouter=require('./solution');
 
 var authenfication=require('./authenticate');
+var authenficator=require('../../services/auth/auth').auth;
 
+var passport=require('../../services/auth/auth').passport;
 router.use('/authenticate',authenfication);
+var User=require('../../models/user');
 router.use('/user',userRouter);
-router.use('/Goal',missionRouter);
-router.use('/Goal',goalRouter);
-router.use('/Goal',solutionRouter);
+router.use('/Goal',passport.authenticate('jwt',{session:false}),missionRouter);
+router.use('/Goal',passport.authenticate('jwt',{session:false}),goalRouter);
+router.use('/Goal',passport.authenticate('jwt',{session:false}),solutionRouter);
 router.get('/',function(req,res){
   res.json({
     message:"hello,world"
   });
 });
 
-router.post('/',function(req,res){
-  res.send({
-    message:req.body.text
-  })
-})
 module.exports = router;

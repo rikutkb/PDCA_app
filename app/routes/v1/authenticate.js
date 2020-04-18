@@ -8,7 +8,10 @@ var webclient = require("request");
 require('dotenv').config();
 var jwt=require('jsonwebtoken');
 function gererateToken(userid){
-  var token=jwt.sign({id:userid},config.SECRET_KEY,{
+  const payload ={
+    user_id:userid
+  };
+  var token=jwt.sign(payload,process.env.SECRET_KEY,{
     expiresIn:60000
   })
   return token;
@@ -25,7 +28,10 @@ router.post('/',(req,res)=>{
   }).then((user)=>{
     if(user){
       if(user.dataValues.password==post_pass){
-        var token=gererateToken(req.body.user_id);
+        console.log(user.dataValues);
+        var token=jwt.sign(user.dataValues,process.env.SECRET_KEY,{
+          expiresIn:60000
+        })   
         res.status(200).json(
           {auth:true,user_id:user.user_id,token:token}
         )
@@ -37,6 +43,7 @@ router.post('/',(req,res)=>{
     }
 
   }).catch((err)=>{
+    console.error(err);
     res.status(500).json({})
   })
 })

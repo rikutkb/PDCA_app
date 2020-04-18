@@ -5,7 +5,6 @@ var Goal=require('../../models/goal');
 var GoalUser=require('../../models/goal_user');
 const uuid=require('uuid');
 var webclient = require("request");
-
 function FindGoals (goal_user){
     Goal.findOne({
       where:{
@@ -19,6 +18,7 @@ function FindGoals (goal_user){
 }
 
 router.get('/',(req,res)=>{
+  console.log(req);
   var user="783da68a-918f-48dd-b693-3543f31831e8";//req.body.user;
   var promises=[];
   var goals=[];
