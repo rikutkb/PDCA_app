@@ -28,7 +28,6 @@ router.post('/',(req,res)=>{
   }).then((user)=>{
     if(user){
       if(user.dataValues.password==post_pass){
-        console.log(user.dataValues);
         var token=jwt.sign(user.dataValues,process.env.SECRET_KEY,{
           expiresIn:60000
         })   

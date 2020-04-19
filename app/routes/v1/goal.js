@@ -18,8 +18,7 @@ function FindGoals (goal_user){
 }
 
 router.get('/',(req,res)=>{
-  console.log(req);
-  var user="783da68a-918f-48dd-b693-3543f31831e8";//req.body.user;
+  var user=req.body.user_id;
   var promises=[];
   var goals=[];
 

@@ -5,7 +5,7 @@ var Mission=require('../../models/mission');
 var uuid=require('uuid');
 var SolutionRouter=require('./solution.js');
 var Solution=require('../../models/solution');
-
+var Goal=require('../../models/goal')
 router.post('/:GoalId/Mission',function(req,res){
   var mission_id=uuid.v4();
   var updatedAt=new Date();

@@ -20,7 +20,6 @@ class Authenticator{
     }
     passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
 
-      console.log('jwt received'+jwt_payload);
       User.findOne({
         where:{
           user_id:jwt_payload.user_id
