@@ -18,13 +18,13 @@ function FindGoals (goal_user){
 }
 
 router.get('/',(req,res)=>{
-  var user=req.body.user_id;
+  var user_id=req.user.dataValues.user_id;
   var promises=[];
   var goals=[];
 
     GoalUser.findAll({
       where:{
-        user_id:user
+        user_id:user_id
       }
     }).then((goalusers)=>{
       for(var G of goalusers){
@@ -49,7 +49,7 @@ router.get('/',(req,res)=>{
 
 
 router.post('/',function(req,res){
-  var user_id=req.body.user_id;
+  var user_id=req.user.dataValues.user_id;
   var updatedAt=new Date();
   console.log(req.body);
   if(user_id){
@@ -82,7 +82,7 @@ router.post('/',function(req,res){
 
 })
 router.get('/:GoalId',function(req,res){
-  var user=req.body.user;
+  var user_id=req.user.dataValues.user_id;
   var goal_id=req.params.GoalId;
   req.body.GoalId=goal_id;
   Goal.findOne({

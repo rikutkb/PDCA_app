@@ -1,18 +1,16 @@
 var express    = require('express');
 var app        = express();
 var bodyParser = require('body-parser');
+
+const cors = require('cors')
 var DBInitilizer=require('./services/db/DBInitializer')
 var Auth=require('./services/auth/auth').auth;
 require('dotenv').config();
 DBInitilizer.Initialize(app);
 Auth.initialize(app);
 Auth.SetStrategy();
+app.use(cors())
 
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());

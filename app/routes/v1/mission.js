@@ -9,23 +9,27 @@ var Goal=require('../../models/goal')
 router.post('/:GoalId/Mission',function(req,res){
   var mission_id=uuid.v4();
   var updatedAt=new Date();
-
+  var user_id=req.user.dataValues.user_id;
+  var goal_id=req.params.GoalId;
   Mission.create({
     mission_id:mission_id,
     mission_name:req.body.mission_name,
-    goal_id:req.body.goal_id,
+    goal_id:goal_id,
     impact:req.body.impact,
     easy:req.body.easy,
     time:req.body.time,
     do:req.body.do,
     updatedAt
   }).then((mission)=>{
-    res.json(mission.dataValues);
+    var result={Mission:mission.dataValues}
+    res.json(result);
   })
 })
 
 router.get('/:GoalId/Mission',function(req,res){
   var goal_id=req.params.GoalId;
+  var user_id=req.user.dataValues.user_id;
+
   console.log(goal_id);
 
   Goal.findOne({
@@ -43,13 +47,15 @@ router.get('/:GoalId/Mission',function(req,res){
       for( var mission of missions){
         missions_.push(mission.dataValues)
       }
-      var result={goal:goal.dataValues,missions:missions_}
+      var result={Goal:goal.dataValues,Missions:missions_}
       res.status(200).json(result);
     })
   })
 
 });
 router.post('/:GoalId/Mission/:MissionId',function(req,res){
+  var user_id=req.user.dataValues.user_id;
+
   var goal_id=req.params.GoalId;
   var mission_id=req.params.MissionId;
   Mission.findOne({
@@ -62,6 +68,8 @@ router.post('/:GoalId/Mission/:MissionId',function(req,res){
   
 })
 router.post('/:GoalId/Mission/:MissionId',function(req,res){
+  var user_id=req.user.dataValues.user_id;
+
   var goal_id=req.params.GoalId;
   var mission_id=req.params.MissionId;
   Mission.upsert({
