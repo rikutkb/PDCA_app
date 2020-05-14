@@ -21,7 +21,6 @@ router.get('/',(req,res)=>{
   var user_id=req.user.dataValues.user_id;
   var promises=[];
   var goals=[];
-
     GoalUser.findAll({
       where:{
         user_id:user_id
@@ -51,12 +50,11 @@ router.get('/',(req,res)=>{
 router.post('/',function(req,res){
   var user_id=req.user.dataValues.user_id;
   var updatedAt=new Date();
-  console.log(req.body);
   if(user_id){
     var goalId=uuid.v4();
     Goal.create({
       goal_id:goalId,
-      goal_name:req.body.goalName.slice(0,255),
+      goal_name:req.body.goal_name.slice(0,255),
       period:req.body.period,
       current:req.body.current,
       gap:req.body.gap.slice(0,255),

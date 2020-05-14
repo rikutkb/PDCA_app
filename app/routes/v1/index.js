@@ -14,7 +14,7 @@ var User=require('../../models/user');
 router.use('/user',userRouter);
 router.use('/Goal',passport.authenticate('jwt',{session:false}),missionRouter);
 router.use('/Goal',passport.authenticate('jwt',{session:false}),goalRouter);
-router.use('/Goal',passport.authenticate('jwt',{session:false}),solutionRouter);
+router.use('/',passport.authenticate('jwt',{session:false}),solutionRouter);
 router.get('/',function(req,res){
   res.json({
     message:"hello,world"

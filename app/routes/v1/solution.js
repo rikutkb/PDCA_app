@@ -2,12 +2,76 @@ var express = require('express');
 var router = express.Router();
 var User=require('../../models/user');
 var Mission=require('../../models/mission');
+var Goal=require('../../models/goal')
 var uuid=require('uuid');
 var Solution=require('../../models/solution');
 
+function getSolutionListFromGoalId(goal_id){
+  return new Promise(function(resolve,reject){
+    Mission.findAll({
+      where:{
+        goal_id:goal_id
+      }
+    }).then((missions)=>{
+      var MissionId_list=[]
+      missions.map((mission)=>MissionId_list.push(mission.mission_id))
+      var promises=[]
+      var solutions=[]
+      MissionId_list.forEach((mission_id)=>{
+        promises.push(Solution.findAll({
+          where:{
+            mission_id:mission_id
+          }
+        }).then((solutions_)=>{
+          solutions_.map((solution)=>solutions.push(solution))
+        }))
+      })
+      Promise.all(promises).then(()=>{
+        resolve(solutions)
+      })
+    })
+  })
+}
+function getSolutions(goal_id){
+  return new Promise(function(resolve,reject){
+    
+    Goal.findOne({
+      where:{
+        goal_id:goal_id
+      }
+    }).then((goal_)=>{
+      getSolutionListFromGoalId(goal_id).then((result)=>{
+        
+        var goal=goal_.dataValues
+        goal.todos=result
+        resolve(goal)
+      })
+    })
+  })
+}
 
+router.post('/Todos',function(req,res){
+  console.log('gettign todos')
+  var GoalId_list=req.body.GoalId_list
+  var promises=[]
+  var goals=[]
 
-router.post('/:GoalId/Mission/:MissionId/Solution',function(req,res){
+  GoalId_list.forEach((goal_id)=>{
+    promises.push(
+      getSolutions(goal_id).then((result)=>{
+        if(result.todos.length>0){
+          goals.push(result)
+
+        }
+    }))
+  })
+  Promise.all(promises).then((result)=>{
+    res.json({todos:goals})
+  })
+
+})
+
+router.post('/Mission/:MissionId/Solution',function(req,res){
   var mission_id=req.params.MissionId;
   var solution_id=uuid.v4();
   var updatedAt=new Date();
@@ -25,8 +89,7 @@ router.post('/:GoalId/Mission/:MissionId/Solution',function(req,res){
   })
 })
 
-router.get('/:GoalId/Mission/:MissionId/Solution',function(req,res){
-  var goal_id=req.params.GoalId;
+router.get('/Mission/:MissionId/Solution',function(req,res){
   var mission_id=req.params.MissionId;
   Mission.findOne({
     where:{
@@ -50,11 +113,11 @@ router.get('/:GoalId/Mission/:MissionId/Solution',function(req,res){
 
 
 });
-router.delete('/:GoalId/Mission/:MissionId/Solution/:SolutionId',function(req,res){
+router.delete('/Mission/:MissionId/Solution/:SolutionId',function(req,res){
   var solution_id=req.params.solution_id;
 
 })
-router.post('/:GoalId/Mission/:MissionId/Solution/:SolutionId',function(req,res){
+router.post('/Mission/:MissionId/Solution/:SolutionId',function(req,res){
   var solution_id=req.params.SolutionId;
   Solution.upsert({
     solution_name:req.body.solution.solution_name,
@@ -69,14 +132,14 @@ router.post('/:GoalId/Mission/:MissionId/Solution/:SolutionId',function(req,res)
   })  
 })
 
-router.get('/:GoalId/Mission/:MissionId/Solution/:SolutionId/log',function(req,res){
+router.get('/Mission/:MissionId/Solution/:SolutionId/log',function(req,res){
 
 })
-router.post('/:GoalId/Mission/:MissionId/Solution/:SolutionId/log',function(req,res){
+router.post('/Mission/:MissionId/Solution/:SolutionId/log',function(req,res){
 
 })
 
-router.get('/:GoalId/Mission/:MissionId/Solution/:SolutionId/frequency',function(req,res){
+router.get('/Mission/:MissionId/Solution/:SolutionId/frequency',function(req,res){
 
 })
 module.exports = router;

@@ -7,14 +7,17 @@ const uuid=require('uuid');
 var webclient = require("request");
 require('dotenv').config();
 var jwt=require('jsonwebtoken');
-function gererateToken(userid){
-  const payload ={
-    user_id:userid
-  };
+function gererateToken(user_id){
+
   var token=jwt.sign(payload,process.env.SECRET_KEY,{
     expiresIn:60000
   })
-  return token;
+  const payload ={
+    user_id:user_id,
+    token:token
+
+  };
+  return payload;
 }
 
 router.post('/',(req,res)=>{
@@ -27,6 +30,7 @@ router.post('/',(req,res)=>{
     }
   }).then((user)=>{
     if(user){
+      console.log(user)
       if(user.dataValues.password==post_pass){
         var token=jwt.sign(user.dataValues,process.env.SECRET_KEY,{
           expiresIn:60000
