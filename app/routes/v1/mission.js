@@ -11,6 +11,7 @@ router.post('/:GoalId/Mission',function(req,res){
   var updatedAt=new Date();
   var user_id=req.user.dataValues.user_id;
   var goal_id=req.params.GoalId;
+  console.log(goal_id)
   Mission.create({
     mission_id:mission_id,
     mission_name:req.body.mission_name,
