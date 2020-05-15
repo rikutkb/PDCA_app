@@ -115,7 +115,18 @@ router.get('/Mission/:MissionId/Solution',function(req,res){
 
 });
 router.delete('/Mission/:MissionId/Solution/:SolutionId',function(req,res){
-  var solution_id=req.params.solution_id;
+  
+  var solution_id=req.params.SolutionId;
+  console.log(solution_id)
+  Solution.destroy({
+    where:{
+      solution_id:solution_id
+    }
+  }).then((result)=>{
+    res.status(201).send('Solutiton Delete Success')
+  }).catch((err)=>{
+    res.status(500)
+  })
 
 })
 router.post('/Mission/:MissionId/Solution/:SolutionId',function(req,res){
