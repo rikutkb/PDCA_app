@@ -7,6 +7,8 @@ const uuid=require('uuid');
 var webclient = require("request");
 require('dotenv').config();
 var jwt=require('jsonwebtoken');
+const bcrypt=require('bcrypt');
+const saltRounds=10;
 function gererateToken(user_id){
 
   var token=jwt.sign(payload,process.env.SECRET_KEY,{
@@ -30,17 +32,21 @@ router.post('/',(req,res)=>{
     }
   }).then((user)=>{
     if(user){
-      console.log(user)
-      if(user.dataValues.password==post_pass){
-        var token=jwt.sign(user.dataValues,process.env.SECRET_KEY,{
-          expiresIn:60000
-        })   
-        res.status(200).json(
-          {auth:true,user_id:user.user_id,token:token}
-        )
-      }else{
-        res.status(401).json({auth:false,token:null})
-      }
+      
+      bcrypt.compare(post_pass,user.dataValues.password_hash).then((isCorrectPassword)=>{
+        if(isCorrectPassword){
+          var token=jwt.sign(user.dataValues,process.env.SECRET_KEY,{
+            expiresIn:60000
+          })   ;
+          delete user.dataValues.password_hash
+          res.status(201).json(
+            {auth:true,user_id:user.user_id,token:token,user:user}
+          )
+        }else{
+          res.status(401).json({auth:false,token:null})
+
+        }
+      })
     }else{
       res.status(404).json({auth:false})
     }

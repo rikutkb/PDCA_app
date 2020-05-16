@@ -23,8 +23,9 @@ const User=loader.database.define('users',{
     allowNull:true,
     unique:true
   },
-  password:{
-    type:Sequelize.STRING
+  password_hash:{
+    type:Sequelize.STRING,
+    allowNull:false
   }
 },{
   freezeTableName:true,

@@ -5,7 +5,8 @@ var Mission=require('../../models/mission');
 var Goal=require('../../models/goal')
 var uuid=require('uuid');
 var Solution=require('../../models/solution');
-
+var SolutionLog=require('../../models/solution_log')
+var SolutionFrequency=require('../../models/solution_frequency')
 function getSolutionListFromGoalId(goal_id){
   return new Promise(function(resolve,reject){
     Mission.findAll({
@@ -114,44 +115,138 @@ router.get('/Mission/:MissionId/Solution',function(req,res){
 
 
 });
+
+function solutionDelete(solution_id){
+  return new Promise(function(resolve,reject){
+    var promises=[]
+    promises.push(SolutionFrequency.destroy({
+      where:{
+        solution_id:solution_id
+            }
+    }).catch((err)=>{
+      reject(err)
+    }))
+    promises.push(SolutionLog.destroy({
+      where:{
+        solution_id:solution_id
+      }
+    }).catch((err)=>{
+      reject(err)
+    }))
+    promises.push(Solution.destroy({
+      where:{
+        solution_id:solution_id
+      }
+    }).catch((err)=>{
+      reject(err)
+    }))
+    Promise.all(promises).then(()=>{
+      resolve()
+    }).catch((err)=>{
+      reject(err)
+    })
+  }) 
+}
+
+
+
 router.delete('/Mission/:MissionId/Solution/:SolutionId',function(req,res){
-  
   var solution_id=req.params.SolutionId;
   console.log(solution_id)
-  Solution.destroy({
-    where:{
-      solution_id:solution_id
-    }
-  }).then((result)=>{
-    res.status(201).send('Solutiton Delete Success')
+  solutionDelete(solution_id).then(()=>{
+    res.status(201).send('Solution Deleted')
   }).catch((err)=>{
-    res.status(500)
+    console.log(err)
+    res.status(500).send(err)
   })
 
 })
-router.post('/Mission/:MissionId/Solution/:SolutionId',function(req,res){
+router.put('/Mission/:MissionId/Solution/:SolutionId',function(req,res){
   var solution_id=req.params.SolutionId;
   Solution.upsert({
-    solution_name:req.body.solution.solution_name,
+    solution_name:req.body.solution_name,
     solution_id:solution_id,
-    impact:req.body.mission.impact,
-    easy:req.body.mission.easy,
-    time:mission.body.mission.time,
-    do:req.body.mission.do,
+    impact:req.body.impact,
+    easy:req.body.easy,
+    time:req.body.time,
+    do:req.body.do,
     updatedAt
   }).then((solution)=>{
     res.json(solution.dataValues);
   })  
 })
 
+function getSolutionLog(solution_id){
+  SolutionLog.findAll({
+    where:{
+      solution_id:solution_id
+    }
+  }).then((solution_logs)=>{
+    return solution_logs
+  })
+}
+
+
 router.get('/Mission/:MissionId/Solution/:SolutionId/log',function(req,res){
+  var solution_id=req.params.SolutionId
+  getSolutionLog(solution_id).then((result)=>{
+    res.status(201).send(result)
+  })
 
 })
 router.post('/Mission/:MissionId/Solution/:SolutionId/log',function(req,res){
-
+  var solution_id=req.params.SolutionId
+  SolutionLog.create({
+    solution_id:solution_id,
+    date:req.body.date
+  }).then((solutionlog)=>{
+    res.status(201).send(solutionlog)
+  })
 })
+
 
 router.get('/Mission/:MissionId/Solution/:SolutionId/frequency',function(req,res){
+  var solution_id=req.params.SolutionId
+  getSolutionFrequency(solution_id).then((result)=>{
+    res.status(201).send(result)
+  })})
 
+router.post('/Mission/:MissionId/Solution/:SolutionId/frequency',function(req,res){
+  var solution_id=req.params.SolutionId
+  SolutionFrequency.upsert({
+    solution_id:solution_id,
+    day:req.body.day
+  }).then((SolutionFrequency)=>{
+    resolve(SolutionFrequency)
+  }).catch((err)=>{
+    reject(err)
+  })
 })
+
+
+function getSolutionLog(solution_id){
+  return new Promise(function(resolve,reject){
+    SolutionFrequency.find({
+      solution_id:solution_id
+    }).then((SolutionFrequency)=>{
+      resolve(SolutionFrequency)
+    }).catch((err)=>{
+      reject(err)
+    })
+  })
+}
+
+function getSolutionFrequency(solution_id){
+  return new Promise(function(resolve,reject){
+    SolutionFrequency.find({
+      solution_id:solution_id
+    }).then((SolutionFrequency)=>{
+      resolve(SolutionFrequency)
+    }).catch((err)=>{
+      reject(err)
+    })
+  })
+}
+
+
 module.exports = router;

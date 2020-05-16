@@ -3,6 +3,8 @@ var router = express.Router();
 var User=require('../../models/user');
 var Goal=require('../../models/goal');
 var GoalUser=require('../../models/goal_user');
+var Mission=require('../../models/mission')
+var Solution=require('../../models/solution')
 const uuid=require('uuid');
 var webclient = require("request");
 function FindGoals (goal_user){
@@ -46,6 +48,22 @@ router.get('/',(req,res)=>{
 
 });
 
+router.put('/Goal/:GoalId',function(req,res){
+  var goal_id=req.params.GoalId
+  Goal.upsert({
+    goal_id:goal_id,
+    goal_name:req.body.goal_name.slice(0,255),
+    period:req.body.period,
+    current:req.body.current,
+    gap:req.body.gap.slice(0,255),
+    unit:req.body.unit.slice(0,255),
+  }).then((goal)=>{
+    res.status(201).send(goal)
+  }).catch((err)=>{
+    res.status(500).send(err)
+  })
+})
+
 
 router.post('/',function(req,res){
   var user_id=req.user.dataValues.user_id;
@@ -77,7 +95,6 @@ router.post('/',function(req,res){
       status:'fail'
     })
   }
-
 })
 router.get('/:GoalId',function(req,res){
   var user_id=req.user.dataValues.user_id;
@@ -91,7 +108,6 @@ router.get('/:GoalId',function(req,res){
   var result={goal:goal.dataValues}
   res.json(result);
   });
-
   
 });
 router.post('/:GoalId',function(req,res){
@@ -126,6 +142,52 @@ router.get('/:GoalId/users',function(req,res){
   })
 
 });
+router.delete('/:GoalId',function(req,res){
+  var goal_id=req.params.GoalId;
+  var mission_id_list=[];
+  var promises=[]
+  promises.push(
+  Mission.findAll({
+    where:{
+      goal_id:goal_id
+    }
+  }).then((missions)=>{
+    missions.map((mission)=>mission_id_list.push(mission.mission_id))
+  }).then(()=>{
+    mission_id_list.forEach((mission_id)=>{
+      Solution.destroy({
+        where:{
+          mission_id:mission_id,
+          truncate:true
+        }
+      })
+    })
+  }))
+  promises.push(
+  Mission.destroy({
+    where:{
+      goal_id:goal_id,
+      truncate:true
+    }
+  }).then(()=>{
+
+  }).catch((err)=>{
+    res.status(500);
+  })
+  )
+  promises.push(
+  Solution.destroy({
+    where:{
+      goal_id:goal_id
+    }
+  }))
+  Promise.all(promises).then(()=>{
+    res.status(201).send('Goal deleted')
+  })
+
+
+
+})
 router.get('/:GoalId/owners',function(req,res){
   var goal_id=req.params.GoalId;
   GoalUser.findAll({
@@ -173,6 +235,7 @@ router.post('/:GoalId/owners/:userId',function(req,res){
   })
 })
 router.delete('/:GoalId/users/:userId',function(req,res){
+  
 
 })
 router.delete('/:GoalId/users/:userId',function(req,res){

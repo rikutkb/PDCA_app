@@ -54,6 +54,23 @@ router.get('/:GoalId/Mission',function(req,res){
   })
 
 });
+
+router.put('/:GoalId/Mission/:MissionId'),function(req,res){
+  var mission_id=req.params.MissionId
+  var updatedAt=new Date();
+  Mission.upsert({
+    mission_id:mission_id,
+    mission_name:req.body.mission_name,
+    impact:req.body.impact,
+    easy:req.body.easy,
+    time:req.body.time,
+    do:req.body.do,
+    updatedAt
+  }).then((mission)=>{
+    var result={Mission:mission.dataValues}
+    res.json(result);
+  })
+}
 router.post('/:GoalId/Mission/:MissionId',function(req,res){
   var user_id=req.user.dataValues.user_id;
 
@@ -66,7 +83,6 @@ router.post('/:GoalId/Mission/:MissionId',function(req,res){
   }).then((mission)=>{
     res.json(mission.dataValues);
   })
-  
 })
 router.post('/:GoalId/Mission/:MissionId',function(req,res){
   var user_id=req.user.dataValues.user_id;
@@ -90,6 +106,37 @@ router.post('/:GoalId/Mission/:MissionId',function(req,res){
 
 router.delete('/:GoalId/Mission/:MissionId',function(req,res){
   var goal_id=req.params.GoalId;
+  var mission_id=req.params.MissionId;
+
+  var promises=[]
+  var errors=[];
+  promises.push(Solution.destroy({
+    where:{
+      mission_id:MissionId,
+      truncate: true
+    }
+  }).then((result)=>{
+
+  }).catch((err)=>{
+
+  }))
+  promises.push(Mission.destroy({
+    where:{
+      mission_id:MissionId
+    }
+  }).then((result)=>{
+
+  }).catch((err)=>{
+    errors.push(err)
+  }))
+
+  Promise.all(promises).then(()=>{
+    if(errors.length>0){
+      res.status(201).send('Mission delete success')
+    }else{
+      res.status(500).send('Mission delete fail')
+    }
+  })
   
 })
 module.exports = router;
