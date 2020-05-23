@@ -9,14 +9,32 @@ router.post('/new',function(req,res){
   var user_id=uuid.v4();
   var password=req.body.password
   bcrypt.hash(password,saltRounds,function(err,hash){
-    User.create({
-      user_id:user_id,
-      user_name:req.body.user_name,
-      screen_name:req.body.screen_name,
-      mail:req.body.mail,
-      password_hash:hash 
+    User.findOne({
+      where:{
+        mail:req.body.mail
+      }
     }).then((user)=>{
-      res.status(201).send(user);
+      console.log(user)
+      if(user===null){
+
+        User.create({
+          user_id:user_id,
+          user_name:req.body.user_name,
+          screen_name:req.body.screen_name,
+          mail:req.body.mail,
+          password_hash:hash 
+        }).then((user_)=>{
+          delete user_.password_hash;
+          res.status(201).send(user_);
+          
+        }).catch((err)=>{
+          console.log(err)
+          res.status(500).send("User creation failed");
+        })
+
+      }else{
+        res.status(409).send("mail addres is already used");
+      }
     })
   })
 })

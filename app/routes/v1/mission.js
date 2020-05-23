@@ -107,36 +107,22 @@ router.post('/:GoalId/Mission/:MissionId',function(req,res){
 router.delete('/:GoalId/Mission/:MissionId',function(req,res){
   var goal_id=req.params.GoalId;
   var mission_id=req.params.MissionId;
-
-  var promises=[]
-  var errors=[];
-  promises.push(Solution.destroy({
+  console.log(mission_id)
+  Solution.destroy({
     where:{
-      mission_id:MissionId,
-      truncate: true
+      mission_id:mission_id
     }
-  }).then((result)=>{
-
+  }).then(()=>{
+    Mission.destroy({
+      where:{
+        mission_id:mission_id
+      }
+    }).then(()=>{
+      res.status(201).send('Mission delte success')
+    })
   }).catch((err)=>{
+    console.log(err)
 
-  }))
-  promises.push(Mission.destroy({
-    where:{
-      mission_id:MissionId
-    }
-  }).then((result)=>{
-
-  }).catch((err)=>{
-    errors.push(err)
-  }))
-
-  Promise.all(promises).then(()=>{
-    if(errors.length>0){
-      res.status(201).send('Mission delete success')
-    }else{
-      res.status(500).send('Mission delete fail')
-    }
   })
-  
 })
 module.exports = router;

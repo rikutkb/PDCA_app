@@ -15,8 +15,7 @@ const User=loader.database.define('users',{
   },
   screen_name:{
     type:Sequelize.STRING,
-    allowNull:false,
-    unique:true
+    allowNull:false
   },
   mail:{
     type:Sequelize.STRING,

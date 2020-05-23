@@ -34,7 +34,10 @@ router.get('/',(req,res)=>{
             goal_id:G.goal_id
           }
         }).then((goal)=>{
-          goals.push(goal.dataValues);
+          if(goal!=null){
+            goals.push(goal.dataValues);
+
+          }
         })
         )
       }
@@ -87,7 +90,7 @@ router.post('/',function(req,res){
         user_id:user_id,
         goal_id:goalId
       }).then((goaluser)=>{
-        res.json(goaluser.dataValues);
+        res.json({goal:goal.dataValues});
       })
     })
   }else{
@@ -145,46 +148,52 @@ router.get('/:GoalId/users',function(req,res){
 router.delete('/:GoalId',function(req,res){
   var goal_id=req.params.GoalId;
   var mission_id_list=[];
-  var promises=[]
-  promises.push(
+
   Mission.findAll({
     where:{
       goal_id:goal_id
     }
   }).then((missions)=>{
+    
     missions.map((mission)=>mission_id_list.push(mission.mission_id))
+    
   }).then(()=>{
-    mission_id_list.forEach((mission_id)=>{
-      Solution.destroy({
+    var promises=[]
+    promises.push(
+      Mission.destroy({
         where:{
-          mission_id:mission_id,
-          truncate:true
+          goal_id:goal_id
+        }
+    }))
+    promises.push(
+      Goal.destroy({
+        where:{
+          goal_id:goal_id
         }
       })
+    )
+    promises.push(
+      GoalUser.destroy({
+        where:{
+          goal_id:goal_id
+        }
+      })
+    )
+
+
+    mission_id_list.forEach((mission_id)=>{
+      promises.push(
+        Solution.destroy({
+          where:{
+            mission_id:mission_id
+          }
+        })
+      )
     })
-  }))
-  promises.push(
-  Mission.destroy({
-    where:{
-      goal_id:goal_id,
-      truncate:true
-    }
-  }).then(()=>{
-
-  }).catch((err)=>{
-    res.status(500);
+    Promise.all(promises).then(()=>{
+      res.status(201).send('Goal delete finished')
+    })
   })
-  )
-  promises.push(
-  Solution.destroy({
-    where:{
-      goal_id:goal_id
-    }
-  }))
-  Promise.all(promises).then(()=>{
-    res.status(201).send('Goal deleted')
-  })
-
 
 
 })

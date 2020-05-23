@@ -87,7 +87,14 @@ router.post('/Mission/:MissionId/Solution',function(req,res){
     do:req.body.do,
     updatedAt
   }).then((solution)=>{
-    res.json(solution.dataValues);
+
+    SolutionFrequency.create({
+      solution_id:solution_id,
+      day:req.body.day_bit
+    }).then((SolutionFrequency)=>{
+      res.json({solution:solution,SolutionFrequency:SolutionFrequency});
+
+    })
   })
 })
 
@@ -152,7 +159,6 @@ function solutionDelete(solution_id){
 
 router.delete('/Mission/:MissionId/Solution/:SolutionId',function(req,res){
   var solution_id=req.params.SolutionId;
-  console.log(solution_id)
   solutionDelete(solution_id).then(()=>{
     res.status(201).send('Solution Deleted')
   }).catch((err)=>{
@@ -226,7 +232,7 @@ router.post('/Mission/:MissionId/Solution/:SolutionId/frequency',function(req,re
 
 function getSolutionLog(solution_id){
   return new Promise(function(resolve,reject){
-    SolutionFrequency.find({
+    SolutionFrequency.findAll({
       solution_id:solution_id
     }).then((SolutionFrequency)=>{
       resolve(SolutionFrequency)
@@ -238,7 +244,7 @@ function getSolutionLog(solution_id){
 
 function getSolutionFrequency(solution_id){
   return new Promise(function(resolve,reject){
-    SolutionFrequency.find({
+    SolutionFrequency.findOne({
       solution_id:solution_id
     }).then((SolutionFrequency)=>{
       resolve(SolutionFrequency)
