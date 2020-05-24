@@ -6,7 +6,8 @@ var Goal=require('../../models/goal')
 var uuid=require('uuid');
 var Solution=require('../../models/solution');
 var SolutionLog=require('../../models/solution_log')
-var SolutionFrequency=require('../../models/solution_frequency')
+var SolutionFrequency=require('../../models/solution_frequency');
+const SFFunctions=require('./solutionfrequency')
 function getSolutionListFromGoalId(goal_id){
   return new Promise(function(resolve,reject){
     Mission.findAll({
@@ -51,6 +52,11 @@ function getSolutions(goal_id){
   })
 }
 
+function postSolutionLog(solution_id,date,done){
+
+}
+
+
 router.post('/Todos',function(req,res){
   console.log('gettign todos')
   var GoalId_list=req.body.GoalId_list
@@ -88,13 +94,10 @@ router.post('/Mission/:MissionId/Solution',function(req,res){
     updatedAt
   }).then((solution)=>{
 
-    SolutionFrequency.create({
-      solution_id:solution_id,
-      day:req.body.day_bit
-    }).then((SolutionFrequency)=>{
-      res.json({solution:solution,SolutionFrequency:SolutionFrequency});
-
-    })
+    SFFunctions.postSolutionFrequnency(solution_id,req.body.day_bit).then((result)=>{
+      console.log(result)
+        res.json({solution:solution,frequency:result});
+      })
   })
 })
 
@@ -110,12 +113,16 @@ router.get('/Mission/:MissionId/Solution',function(req,res){
         mission_id:mission_id
       }
     }).then((solutions)=>{
-      var solutions_=[];
-      for(var solution of solutions){
-        solutions_.push(solution.dataValues)
-      }
-      var result={mission:mission.dataValues,solutions:solutions_}
-      res.json(result);
+      var solutions_=solutions.map(solution_=>solution_.dataValues);
+      var solution_fre=solutions_.map(solution=>SFFunctions.GetSolutionFrequency(solution.solution_id))
+      Promise.all(solution_fre).then((results)=>{
+        var result={
+          mission:mission.dataValues,solutions:solutions_,
+          frequencies:results
+        }
+        res.status(201).json(result);
+      })
+
     })
   })
 
