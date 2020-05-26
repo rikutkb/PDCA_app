@@ -33,6 +33,9 @@ const Solution=loader.database.define('solutions',{
     type:Sequelize.BOOLEAN,
     allowNull:false
   },
+  done:{
+    type:Sequelize.BOOLEAN
+  },
   updatedAt:{
     type:Sequelize.DATE,
     allowNull:false

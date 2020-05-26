@@ -14,6 +14,12 @@ const SolutionLog=loader.database.define('solution_logs',{
     primaryKey:true,
     allowNull:false
   },
+  time:{
+    type:Sequelize.TIME
+  },
+  memo:{
+    type:Sequelize.TEXT
+  },
   done:{
     type:Sequelize.BOOLEAN,
     allowNull:false

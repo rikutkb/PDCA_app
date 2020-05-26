@@ -33,6 +33,9 @@ const Mission=loader.database.define('missions',{
     type:Sequelize.BOOLEAN,
     allowNull:false
   },
+  done:{
+    type:Sequelize.BOOLEAN
+  },
   updatedAt:{
     type:Sequelize.DATE,
     allowNull:false

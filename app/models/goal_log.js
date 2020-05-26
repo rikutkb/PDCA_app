@@ -9,11 +9,6 @@ const GoalLog=loader.database.define('goal_logs',{
     primaryKey:true,
     allowNull:false
   },
-  user_id:{
-    type:Sequelize.INTEGER,
-    primaryKey:true,
-    allowNull:false
-  },
   date:{
     type:Sequelize.DATE,
     allowNull:false

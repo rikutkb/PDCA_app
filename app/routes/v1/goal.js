@@ -53,6 +53,7 @@ router.get('/',(req,res)=>{
 
 router.put('/Goal/:GoalId',function(req,res){
   var goal_id=req.params.GoalId
+  var updatedAt=new Date();
   Goal.upsert({
     goal_id:goal_id,
     goal_name:req.body.goal_name.slice(0,255),
@@ -60,6 +61,7 @@ router.put('/Goal/:GoalId',function(req,res){
     current:req.body.current,
     gap:req.body.gap.slice(0,255),
     unit:req.body.unit.slice(0,255),
+    updatedAt
   }).then((goal)=>{
     res.status(201).send(goal)
   }).catch((err)=>{

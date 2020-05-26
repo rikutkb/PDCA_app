@@ -20,6 +20,7 @@ router.post('/:GoalId/Mission',function(req,res){
     easy:req.body.easy,
     time:req.body.time,
     do:req.body.do,
+    done:false,
     updatedAt
   }).then((mission)=>{
     var result={Mission:mission.dataValues}
@@ -65,6 +66,7 @@ router.put('/:GoalId/Mission/:MissionId'),function(req,res){
     easy:req.body.easy,
     time:req.body.time,
     do:req.body.do,
+    done:req.body.done,
     updatedAt
   }).then((mission)=>{
     var result={Mission:mission.dataValues}
@@ -96,6 +98,7 @@ router.post('/:GoalId/Mission/:MissionId',function(req,res){
     easy:req.body.mission.easy,
     time:mission.body.mission.time,
     do:req.body.mission.do,
+    done:req.body.done,
     updatedAt
   }).then((mission)=>{
     res.json(mission.dataValues);

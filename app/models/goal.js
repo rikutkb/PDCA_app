@@ -29,6 +29,9 @@ const Goal=loader.database.define('goals',{
     type:Sequelize.STRING,
     allowNull:true
   },
+  done:{
+    type:Sequelize.BOOLEAN
+  },
   updatedAt:{
     type:Sequelize.DATE,
     allowNull:false

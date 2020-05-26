@@ -91,6 +91,7 @@ router.post('/Mission/:MissionId/Solution',function(req,res){
     easy:req.body.easy,
     time:req.body.time,
     do:req.body.do,
+    done:false,
     updatedAt
   }).then((solution)=>{
 
@@ -183,6 +184,7 @@ router.put('/Mission/:MissionId/Solution/:SolutionId',function(req,res){
     easy:req.body.easy,
     time:req.body.time,
     do:req.body.do,
+    done:req.body.done,
     updatedAt
   }).then((solution)=>{
     res.json(solution.dataValues);
