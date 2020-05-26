@@ -177,8 +177,10 @@ router.delete('/Mission/:MissionId/Solution/:SolutionId',function(req,res){
 })
 router.put('/Mission/:MissionId/Solution/:SolutionId',function(req,res){
   var solution_id=req.params.SolutionId;
+  var updatedAt=new Date();
   Solution.upsert({
     solution_name:req.body.solution_name,
+    mission_id:req.body.mission_id,
     solution_id:solution_id,
     impact:req.body.impact,
     easy:req.body.easy,
@@ -187,8 +189,18 @@ router.put('/Mission/:MissionId/Solution/:SolutionId',function(req,res){
     done:req.body.done,
     updatedAt
   }).then((solution)=>{
-    res.json(solution.dataValues);
-  })  
+    SFFunctions.EditSolutionFrequency(solution_id,req.body.day_bit).then((solution_frequency)=>{
+      var result={
+        solution:solution.dataValues,
+        frequency:solution_frequency
+      }
+      
+      res.status(201).json(result);
+
+    })
+  }).catch((err)=>{
+    res.status(500).send(err)
+  })
 })
 
 function getSolutionLog(solution_id){

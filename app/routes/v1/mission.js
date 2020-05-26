@@ -56,11 +56,13 @@ router.get('/:GoalId/Mission',function(req,res){
 
 });
 
-router.put('/:GoalId/Mission/:MissionId'),function(req,res){
+router.put('/:GoalId/Mission/:MissionId',function(req,res){
+  console.log("hoge")
   var mission_id=req.params.MissionId
   var updatedAt=new Date();
   Mission.upsert({
     mission_id:mission_id,
+    goal_id:req.body.goal_id,
     mission_name:req.body.mission_name,
     impact:req.body.impact,
     easy:req.body.easy,
@@ -72,7 +74,8 @@ router.put('/:GoalId/Mission/:MissionId'),function(req,res){
     var result={Mission:mission.dataValues}
     res.json(result);
   })
-}
+});
+
 router.post('/:GoalId/Mission/:MissionId',function(req,res){
   var user_id=req.user.dataValues.user_id;
 
@@ -86,6 +89,7 @@ router.post('/:GoalId/Mission/:MissionId',function(req,res){
     res.json(mission.dataValues);
   })
 })
+
 router.post('/:GoalId/Mission/:MissionId',function(req,res){
   var user_id=req.user.dataValues.user_id;
 

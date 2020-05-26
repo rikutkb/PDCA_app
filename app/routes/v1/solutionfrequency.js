@@ -19,11 +19,10 @@ function postSolutionFrequnency(solution_id,day_bit){
 function EditSolutionFrequency(solution_id,day_bit){
   return new Promise(function(resolve,reject){
     SolutionFrequency.upsert({
-      where:{
-        solution_id:solution_id,
-        Day:day_bit,
-        do:true
-      }
+      solution_id:solution_id,
+      Day:day_bit,
+      do:true
+  
     }).then((solutionfrequency)=>{
       resolve(solutionfrequency.dataValues)
     })

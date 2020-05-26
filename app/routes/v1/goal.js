@@ -51,7 +51,7 @@ router.get('/',(req,res)=>{
 
 });
 
-router.put('/Goal/:GoalId',function(req,res){
+router.put('/:GoalId',function(req,res){
   var goal_id=req.params.GoalId
   var updatedAt=new Date();
   Goal.upsert({
@@ -73,15 +73,22 @@ router.put('/Goal/:GoalId',function(req,res){
 router.post('/',function(req,res){
   var user_id=req.user.dataValues.user_id;
   var updatedAt=new Date();
+  console.log(req.body)
+  var goal_name=req.body.goal_name.slice(0,255);
+  var gap=req.body.gap.slice(0,255);
+  var unit=req.body.unit.slice(0,255);
+  var current=req.body.current.slice(0,255);
+  
+
   if(user_id){
     var goalId=uuid.v4();
     Goal.create({
       goal_id:goalId,
-      goal_name:req.body.goal_name.slice(0,255),
+      goal_name:goal_name,
       period:req.body.period,
-      current:req.body.current,
-      gap:req.body.gap.slice(0,255),
-      unit:req.body.unit.slice(0,255),
+      current:current,
+      gap:gap,
+      unit:unit,
       updatedAt
     }).then((goal)=>{
       var ownership=true;
