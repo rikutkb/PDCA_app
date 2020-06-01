@@ -3,8 +3,8 @@
 const loader=require('./sequelize-loader');
 const Sequelize=loader.Sequelize;
 
-const GoalLog=loader.database.define('goal_logs',{
-  goal_id:{
+const MissionLog=loader.database.define('mission_logs',{
+  mission_id:{
     type:Sequelize.UUID,
     primaryKey:true,
     allowNull:false
@@ -34,10 +34,10 @@ const GoalLog=loader.database.define('goal_logs',{
   freezeTableName:true, 
   indexes:[
     {
-      fields:['goal_id']
+      fields:['mission_id']
     }
   ]
 }
 )
 
-module.exports=GoalLog;
+module.exports=MissionLog;

@@ -4,6 +4,8 @@ var jwt=require('jsonwebtoken');
 var JwtStrategy=require('passport-jwt').Strategy;
 var ExtractJwt=require('passport-jwt').ExtractJwt;
 require('dotenv').config();
+var GoogleStrategy = require('passport-google-oauth20').Strategy;
+
 var User=require('../../models/user')
 
 class Authenticator{
@@ -18,8 +20,32 @@ class Authenticator{
       secretOrKey: process.env.SECRET_KEY,
       // The issuer stored in the JW
     }
+    const googleConfig = {
+      clientID: process.env.GOOGLE_APP_ID,
+      clientSecret: process.env.GOOGLE_SECRET,
+      callbackURL: `${process.env.URL_PATH}/authenticate/google/callback`,
+      scope: ['email', 'profile'],
+    }
+    const twitterConfig={
+      clientID: process.env.TWITTER_APP_ID,
+      clientSecret: process.env.TWITTER＿SECRET,
+      callbackURL: `${process.env.URL_PATH}/authenticate/twitter/callback`,
+      scope: ['email', 'profile'],
+    }
+    passport.use(new GoogleStrategy({
+      clientID: process.env.GOOGLE_APP_ID,
+      clientSecret: process.env.GOOGLE_SECRET,
+      callbackURL: `${process.env.URL_PATH}/authenticate/google/callback`,
+      scope: ['email', 'profile'],
+    },
+    function(accessToken, refreshToken, profile, cb) {
+      User.findOrCreate({ user_id: profile.id }, function (err, user) {
+        console.log(user)
+        return cb(err, user);
+      });
+    }
+    ));
     passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
-
       User.findOne({
         where:{
           user_id:jwt_payload.user_id
@@ -37,6 +63,7 @@ class Authenticator{
   }
 
   static authenticate(req,res,next){
+    
     passport.authenticate('jwt',{session:false}),function(req,res){
       res.send(req.user.profile);
     }

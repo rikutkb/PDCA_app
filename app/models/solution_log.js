@@ -9,9 +9,13 @@ const SolutionLog=loader.database.define('solution_logs',{
     primaryKey:true,
     allowNull:false
   },
+  index:{
+    type:Sequelize.INTEGER,
+    primaryKey:true,
+    autoIncrement:true
+  },
   date:{
     type:Sequelize.DATE,
-    primaryKey:true,
     allowNull:false
   },
   time:{
@@ -23,6 +27,15 @@ const SolutionLog=loader.database.define('solution_logs',{
   done:{
     type:Sequelize.BOOLEAN,
     allowNull:false
+  },
+  postponed:{
+    type:Sequelize.DATE
+  },
+  progress:{
+    type:Sequelize.INTEGER
+  },
+  reason:{
+    type:Sequelize.TEXT
   }
 },{
   freezeTableName:true, 

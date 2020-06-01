@@ -5,9 +5,9 @@ var Mission=require('../../models/mission');
 var Goal=require('../../models/goal')
 var uuid=require('uuid');
 var Solution=require('../../models/solution');
-var SolutionLog=require('../../models/solution_log')
-var SolutionFrequency=require('../../models/solution_frequency');
-const SFFunctions=require('./solutionfrequency')
+var SolutionLog=require('../../models/solution_log');
+const SLFunctions=require('./solution_log');
+
 function getSolutionListFromGoalId(goal_id){
   return new Promise(function(resolve,reject){
     Mission.findAll({
@@ -52,11 +52,6 @@ function getSolutions(goal_id){
   })
 }
 
-function postSolutionLog(solution_id,date,done){
-
-}
-
-
 router.post('/Todos',function(req,res){
   console.log('gettign todos')
   var GoalId_list=req.body.GoalId_list
@@ -79,7 +74,6 @@ router.post('/Todos',function(req,res){
 })
 
 router.post('/Mission/:MissionId/Solution',function(req,res){
-  
   var mission_id=req.params.MissionId;
   var solution_id=uuid.v4();
   var updatedAt=new Date();
@@ -92,15 +86,13 @@ router.post('/Mission/:MissionId/Solution',function(req,res){
     time:req.body.time,
     do:req.body.do,
     done:false,
+    duration:req.body.duration,
+    week_bit:req.body.week_bit,
     updatedAt
   }).then((solution)=>{
-
-    SFFunctions.postSolutionFrequnency(solution_id,req.body.day_bit).then((result)=>{
-      console.log(result)
-        res.json({solution:solution,frequency:result});
-      })
+    res.status(201).send({solution:solution});
   })
-})
+})  
 
 router.get('/Mission/:MissionId/Solution',function(req,res){
   var mission_id=req.params.MissionId;
@@ -108,39 +100,22 @@ router.get('/Mission/:MissionId/Solution',function(req,res){
     where:{
       mission_id:mission_id
     }
-  }).then((mission)=>{
+  }).then((mission)=>{  
     Solution.findAll({
       where:{
         mission_id:mission_id
       }
     }).then((solutions)=>{
       var solutions_=solutions.map(solution_=>solution_.dataValues);
-      var solution_fre=solutions_.map(solution=>SFFunctions.GetSolutionFrequency(solution.solution_id))
-      Promise.all(solution_fre).then((results)=>{
-        var result={
-          mission:mission.dataValues,solutions:solutions_,
-          frequencies:results
-        }
-        res.status(201).json(result);
-      })
-
+      res.status(201).send(solutions_)
     })
-  })
-
-
-
+  });
 });
 
 function solutionDelete(solution_id){
   return new Promise(function(resolve,reject){
     var promises=[]
-    promises.push(SolutionFrequency.destroy({
-      where:{
-        solution_id:solution_id
-            }
-    }).catch((err)=>{
-      reject(err)
-    }))
+
     promises.push(SolutionLog.destroy({
       where:{
         solution_id:solution_id
@@ -173,7 +148,6 @@ router.delete('/Mission/:MissionId/Solution/:SolutionId',function(req,res){
     console.log(err)
     res.status(500).send(err)
   })
-
 })
 router.put('/Mission/:MissionId/Solution/:SolutionId',function(req,res){
   var solution_id=req.params.SolutionId;
@@ -187,93 +161,36 @@ router.put('/Mission/:MissionId/Solution/:SolutionId',function(req,res){
     time:req.body.time,
     do:req.body.do,
     done:req.body.done,
+    duration:req.body.duration,
+    week_bit:req.body.week_bit,
     updatedAt
   }).then((solution)=>{
-    SFFunctions.EditSolutionFrequency(solution_id,req.body.day_bit).then((solution_frequency)=>{
-      var result={
-        solution:solution.dataValues,
-        frequency:solution_frequency
-      }
-      
-      res.status(201).json(result);
-
-    })
+    var result={
+      solution:solution.dataValues
+    }
+    res.staus(201).json(result);
   }).catch((err)=>{
     res.status(500).send(err)
   })
 })
 
-function getSolutionLog(solution_id){
-  SolutionLog.findAll({
-    where:{
-      solution_id:solution_id
-    }
-  }).then((solution_logs)=>{
-    return solution_logs
-  })
-}
 
 
 router.get('/Mission/:MissionId/Solution/:SolutionId/log',function(req,res){
   var solution_id=req.params.SolutionId
-  getSolutionLog(solution_id).then((result)=>{
+  SLFunctions.GetSolutionLogs(solution_id).then((result)=>{
     res.status(201).send(result)
   })
-
 })
+
 router.post('/Mission/:MissionId/Solution/:SolutionId/log',function(req,res){
   var solution_id=req.params.SolutionId
-  SolutionLog.create({
-    solution_id:solution_id,
-    date:req.body.date
-  }).then((solutionlog)=>{
-    res.status(201).send(solutionlog)
-  })
-})
-
-
-router.get('/Mission/:MissionId/Solution/:SolutionId/frequency',function(req,res){
-  var solution_id=req.params.SolutionId
-  getSolutionFrequency(solution_id).then((result)=>{
-    res.status(201).send(result)
-  })})
-
-router.post('/Mission/:MissionId/Solution/:SolutionId/frequency',function(req,res){
-  var solution_id=req.params.SolutionId
-  SolutionFrequency.upsert({
-    solution_id:solution_id,
-    day:req.body.day
-  }).then((SolutionFrequency)=>{
-    resolve(SolutionFrequency)
+  var data=req.params.data;
+  SLFunctions.postSolutionLog(solution_id,data).then((result)=>{
+    res.status(201).send(result);
   }).catch((err)=>{
-    reject(err)
+    res.status(500).send('log create failed')
   })
 })
-
-
-function getSolutionLog(solution_id){
-  return new Promise(function(resolve,reject){
-    SolutionFrequency.findAll({
-      solution_id:solution_id
-    }).then((SolutionFrequency)=>{
-      resolve(SolutionFrequency)
-    }).catch((err)=>{
-      reject(err)
-    })
-  })
-}
-
-function getSolutionFrequency(solution_id){
-  return new Promise(function(resolve,reject){
-    SolutionFrequency.findOne({
-      solution_id:solution_id
-    }).then((SolutionFrequency)=>{
-      resolve(SolutionFrequency)
-    }).catch((err)=>{
-      reject(err)
-    })
-  })
-}
-
 
 module.exports = router;

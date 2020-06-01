@@ -36,6 +36,12 @@ const Solution=loader.database.define('solutions',{
   done:{
     type:Sequelize.BOOLEAN
   },
+  duration:{
+    type:Sequelize.INTEGER
+  },
+  week_bit:{
+    type:Sequelize.INTEGER
+  },
   updatedAt:{
     type:Sequelize.DATE,
     allowNull:false

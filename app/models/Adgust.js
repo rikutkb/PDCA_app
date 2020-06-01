@@ -3,29 +3,35 @@
 const loader=require('./sequelize-loader');
 const Sequelize=loader.Sequelize;
 
-const SolutionFrequency=loader.database.define('solution_frequencies',{
-  solution_id:{
+const Adgust=loader.database.define('Adgust',{
+  goal_id:{
     type:Sequelize.UUID,
     primaryKey:true,
     allowNull:false
   },
-  Day:{
+  indexes:{
     type:Sequelize.INTEGER,
-    primaryKey:true,
+    primaryKey:true
+  },
+  date:{
+    type:Sequelize.DATE,
     allowNull:false
   },
-  do:{
-    type:Sequelize.BOOLEAN,
+  memo:{
+    type:Sequelize.TEXT
+  },
+  status:{
+    type:Sequelize.INTEGER,
     allowNull:false
   }
 },{
   freezeTableName:true, 
   indexes:[
     {
-      fields:['solution_id']
+      fields:['goal_id']
     }
   ]
 }
 )
 
-module.exports=SolutionFrequency;
+module.exports=Adgust;

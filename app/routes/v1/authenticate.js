@@ -9,6 +9,7 @@ require('dotenv').config();
 var jwt=require('jsonwebtoken');
 const bcrypt=require('bcrypt');
 const saltRounds=10;
+const  passport=require('../../services/auth/auth').passport;
 function gererateToken(user_id){
 
   var token=jwt.sign(payload,process.env.SECRET_KEY,{
@@ -21,6 +22,18 @@ function gererateToken(user_id){
   };
   return payload;
 }
+router.get('/twitter',passport.authenticate('twitter'));
+router.get('/:google',passport.authenticate("google",function(req,res){
+  console.log("JLFKJDS")
+}));
+
+router.get('/:google/callback',
+passport.authenticate('google',{session:false,scope:['https://www.googleapis.com/auth/plus.login']}),
+function(req,res){
+  var toekn=generateToken(req.user.id);
+  res.json({token:token})
+}
+)
 
 router.post('/',(req,res)=>{
   var post_mail=req.body.mail;
