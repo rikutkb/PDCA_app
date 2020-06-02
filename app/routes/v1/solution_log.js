@@ -3,19 +3,19 @@ var SolutionLog=require('../../models/solution_log')
 
 
 
-function postSolutionLog(solution_id,data){
-
+function PostSolutionlog(solution_id,data){
   return new Promise(function(resolve,reject){
-    var date=new Date();
+    console.log(data)
     SolutionLog.create({
       solution_id:solution_id,
-      date:date,
+      date:data.date,
       time:data.time,
       memo:data.memo,
-      done:false,
-      postponed:false,
+      done:data.done,
+      postponed:data.postponed,
       progress:data.progress,
-      reason:data.reason
+      reason:data.reason,
+      
     }).then((solution_log)=>{
       resolve(solution_log.dataValues)
     }).catch((err)=>{
@@ -44,7 +44,7 @@ function EditSolutionlog(solution_id,data){
 }
 function DeleteSolutionlog(solution_id){
   return new Promise(function(resolve,reject){
-    Solutionlog.destroy({
+    SolutionLog.destroy({
       where:{
         solution_id:solution_id,
         index:data.index
@@ -56,15 +56,16 @@ function DeleteSolutionlog(solution_id){
 }
 function GetSolutionlogs(solution_id){
   return new Promise(function(resolve,reject){
-    Solutionlog.findAll({
+    SolutionLog.findAll({
       where:{
         solution_id:solution_id
       }
     }).then((solution_logs)=>{
+      console.log(solution_logs)
       resolve(solution_logs)
     })
   })
 }
 
-module.exports={postSolutionLog,EditSolutionlog,GetSolutionlogs,DeleteSolutionlog
+module.exports={PostSolutionlog,EditSolutionlog,GetSolutionlogs,DeleteSolutionlog
 };

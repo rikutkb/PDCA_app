@@ -17,6 +17,8 @@ router.post('/:GoalId/Mission',function(req,res){
     mission_id:mission_id,
     mission_name:req.body.mission_name,
     goal_id:goal_id,
+    startDate:req.body.startDate,
+    endDate:req.body.endDate,
     impact:req.body.impact,
     easy:req.body.easy,
     time:req.body.time,
@@ -64,6 +66,8 @@ router.put('/:GoalId/Mission/:MissionId',function(req,res){
   Mission.upsert({
     mission_id:mission_id,
     goal_id:req.body.goal_id,
+    startDate:req.body.startDate,
+    endDate:req.body.endDate,
     mission_name:req.body.mission_name,
     impact:req.body.impact,
     easy:req.body.easy,
@@ -99,6 +103,8 @@ router.post('/:GoalId/Mission/:MissionId',function(req,res){
   Mission.upsert({
     mission_id:mission_id,
     mission_name:req.body.mission.mission_name,
+    startDate:req.body.startDate,
+    endDate:req.body.endDate,
     impact:req.body.mission.impact,
     easy:req.body.mission.easy,
     time:mission.body.mission.time,

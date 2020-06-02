@@ -17,6 +17,12 @@ const Mission=loader.database.define('missions',{
     type:Sequelize.UUID,
     allowNull:false
   },
+  startDate:{
+    type:Sequelize.DATE
+  },
+  endDate:{
+    type:Sequelize.DATE
+  },
   impact:{
     type:Sequelize.INTEGER,
     allowNull:false

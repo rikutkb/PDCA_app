@@ -29,6 +29,12 @@ const Solution=loader.database.define('solutions',{
     type:Sequelize.INTEGER,
     allowNull:false
   },
+  startDate:{
+    type:Sequelize.DATE
+  },
+  endDate:{
+    type:Sequelize.DATE
+  },
   do:{
     type:Sequelize.BOOLEAN,
     allowNull:false

@@ -13,9 +13,11 @@ const Goal=loader.database.define('goals',{
     type:Sequelize.STRING,
     allowNull:false
   },
-  period:{
-    type:Sequelize.STRING,
-    allowNull:false
+  startDate:{
+    type:Sequelize.DATE
+  },
+  endDate:{
+    type:Sequelize.DATE
   },
   current:{
     type:Sequelize.STRING,

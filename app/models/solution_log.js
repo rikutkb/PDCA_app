@@ -19,7 +19,7 @@ const SolutionLog=loader.database.define('solution_logs',{
     allowNull:false
   },
   time:{
-    type:Sequelize.TIME
+    type:Sequelize.INTEGER
   },
   memo:{
     type:Sequelize.TEXT

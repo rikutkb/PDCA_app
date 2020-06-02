@@ -81,6 +81,8 @@ router.post('/Mission/:MissionId/Solution',function(req,res){
     solution_name:req.body.solution_name,
     solution_id:solution_id,
     mission_id:mission_id,
+    startDate:req.body.startDate,
+    endDate:req.body.endDate,
     impact:req.body.impact,
     easy:req.body.easy,
     time:req.body.time,
@@ -107,7 +109,7 @@ router.get('/Mission/:MissionId/Solution',function(req,res){
       }
     }).then((solutions)=>{
       var solutions_=solutions.map(solution_=>solution_.dataValues);
-      res.status(201).send(solutions_)
+      res.status(201).json({solutions:solutions_});
     })
   });
 });
@@ -145,7 +147,6 @@ router.delete('/Mission/:MissionId/Solution/:SolutionId',function(req,res){
   solutionDelete(solution_id).then(()=>{
     res.status(201).send('Solution Deleted')
   }).catch((err)=>{
-    console.log(err)
     res.status(500).send(err)
   })
 })
@@ -156,6 +157,8 @@ router.put('/Mission/:MissionId/Solution/:SolutionId',function(req,res){
     solution_name:req.body.solution_name,
     mission_id:req.body.mission_id,
     solution_id:solution_id,
+    startDate:req.body.startDate,
+    endDate:req.body.endDate,
     impact:req.body.impact,
     easy:req.body.easy,
     time:req.body.time,
@@ -168,7 +171,7 @@ router.put('/Mission/:MissionId/Solution/:SolutionId',function(req,res){
     var result={
       solution:solution.dataValues
     }
-    res.staus(201).json(result);
+    res.status(201).json(result);
   }).catch((err)=>{
     res.status(500).send(err)
   })
@@ -178,18 +181,20 @@ router.put('/Mission/:MissionId/Solution/:SolutionId',function(req,res){
 
 router.get('/Mission/:MissionId/Solution/:SolutionId/log',function(req,res){
   var solution_id=req.params.SolutionId
-  SLFunctions.GetSolutionLogs(solution_id).then((result)=>{
-    res.status(201).send(result)
+  SLFunctions.GetSolutionlogs(solution_id).then((result)=>{
+    res.status(201).json({solution_logs:result})
   })
 })
 
 router.post('/Mission/:MissionId/Solution/:SolutionId/log',function(req,res){
   var solution_id=req.params.SolutionId
-  var data=req.params.data;
-  SLFunctions.postSolutionLog(solution_id,data).then((result)=>{
-    res.status(201).send(result);
+  var data=req.body;
+  console.log(req.body)
+  SLFunctions.PostSolutionlog(solution_id,data).then((result)=>{
+    res.status(201).json({solution_logs:result});
   }).catch((err)=>{
-    res.status(500).send('log create failed')
+    console.log(err);
+    res.status(500).json('log create failed')
   })
 })
 

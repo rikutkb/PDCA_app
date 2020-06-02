@@ -7,6 +7,7 @@ var Mission=require('../../models/mission')
 var Solution=require('../../models/solution')
 const uuid=require('uuid');
 var webclient = require("request");
+var CPFunction=require('./CheckPermission');
 function FindGoals (goal_user){
     Goal.findOne({
       where:{
@@ -18,7 +19,6 @@ function FindGoals (goal_user){
     })
 
 }
-
 router.get('/',(req,res)=>{
   var user_id=req.user.dataValues.user_id;
   var promises=[];
@@ -53,20 +53,30 @@ router.get('/',(req,res)=>{
 
 router.put('/:GoalId',function(req,res){
   var goal_id=req.params.GoalId
-  var updatedAt=new Date();
-  Goal.upsert({
-    goal_id:goal_id,
-    goal_name:req.body.goal_name.slice(0,255),
-    period:req.body.period,
-    current:req.body.current,
-    gap:req.body.gap.slice(0,255),
-    unit:req.body.unit.slice(0,255),
-    updatedAt
-  }).then((goal)=>{
-    res.status(201).send(goal)
-  }).catch((err)=>{
-    res.status(500).send(err)
+  var status_id;
+  CPFunction.CheckPermissionGoal(goal_id,req.body.user_id).then((result)=>{
+    status_id=result;
+    if(status>300){
+      res.status(status_id).send("");
+    }
+    var updatedAt=new Date();
+    Goal.upsert({
+      goal_id:goal_id,
+      goal_name:req.body.goal_name.slice(0,255),
+      startDate:req.body.startDate,
+      endDate:req.body.endDate,
+      current:req.body.current,
+      gap:req.body.gap.slice(0,255),
+      unit:req.body.unit.slice(0,255),
+      updatedAt
+    }).then((goal)=>{
+      res.status(201).send(goal)
+    }).catch((err)=>{
+      res.status(500).send(err)
+    })
   })
+
+
 })
 
 
@@ -78,15 +88,15 @@ router.post('/',function(req,res){
   var gap=req.body.gap.slice(0,255);
   var unit=req.body.unit.slice(0,255);
   var current=req.body.current.slice(0,255);
-  
-
+  console.log(user_id);
   if(user_id){
     var goalId=uuid.v4();
     Goal.create({
       goal_id:goalId,
       goal_name:goal_name,
-      period:req.body.period,
       current:current,
+      startDate:req.body.startDate,
+      endDate:req.body.endDate,
       gap:gap,
       unit:unit,
       updatedAt
@@ -127,8 +137,9 @@ router.post('/:GoalId',function(req,res){
   Goal.upsert({
     goal_id:goal_id,
     goal_name:req.body.goalName.slice(0,255),
-    period:req.body.period,
     current:req.body.current,
+    startDate:req.body.startDate,
+    endDate:req.body.endDate,
     gap:req.body.gap.slice(0,255),
     unit:req.body.unit.slice(0,255),
     updatedAt
@@ -157,51 +168,50 @@ router.get('/:GoalId/users',function(req,res){
 router.delete('/:GoalId',function(req,res){
   var goal_id=req.params.GoalId;
   var mission_id_list=[];
-
-  Mission.findAll({
-    where:{
-      goal_id:goal_id
-    }
-  }).then((missions)=>{
-    
-    missions.map((mission)=>mission_id_list.push(mission.mission_id))
-    
-  }).then(()=>{
-    var promises=[]
-    promises.push(
-      Mission.destroy({
-        where:{
-          goal_id:goal_id
-        }
-    }))
-    promises.push(
-      Goal.destroy({
-        where:{
-          goal_id:goal_id
-        }
-      })
-    )
-    promises.push(
-      GoalUser.destroy({
-        where:{
-          goal_id:goal_id
-        }
-      })
-    )
-
-
-    mission_id_list.forEach((mission_id)=>{
+  CPFunction.CheckPermissionGoal(goal_id,req.body.user_id).then((result)=>{
+    if(result>300)res.status(result).send('');
+    Mission.findAll({
+      where:{
+        goal_id:goal_id
+      }
+    }).then((missions)=>{
+      missions.map((mission)=>mission_id_list.push(mission.mission_id))
+    }).then(()=>{
+      var promises=[]
       promises.push(
-        Solution.destroy({
+        Mission.destroy({
           where:{
-            mission_id:mission_id
+            goal_id:goal_id
+          }
+      }))
+      promises.push(
+        Goal.destroy({
+          where:{
+            goal_id:goal_id
           }
         })
       )
+      promises.push(
+        GoalUser.destroy({
+          where:{
+            goal_id:goal_id
+          }
+        })
+      )
+      mission_id_list.forEach((mission_id)=>{
+        promises.push(
+          Solution.destroy({
+            where:{
+              mission_id:mission_id
+            }
+          })
+        )
+      })
+      Promise.all(promises).then(()=>{
+        res.status(201).send('Goal delete finished')
+      })
     })
-    Promise.all(promises).then(()=>{
-      res.status(201).send('Goal delete finished')
-    })
+  
   })
 
 
@@ -215,11 +225,8 @@ router.get('/:GoalId/owners',function(req,res){
   }).then((goals)=>{
     var user_ids=[];
     for (var goal of goals){
-
       if(goal.owner){
-
         user_ids.push(goal.user_id)
-
       }
     }
     res.json(user_ids);

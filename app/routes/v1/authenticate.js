@@ -30,7 +30,7 @@ router.get('/:google',passport.authenticate("google",function(req,res){
 router.get('/:google/callback',
 passport.authenticate('google',{session:false,scope:['https://www.googleapis.com/auth/plus.login']}),
 function(req,res){
-  var toekn=generateToken(req.user.id);
+  var token=generateToken(req.user.id);
   res.json({token:token})
 }
 )

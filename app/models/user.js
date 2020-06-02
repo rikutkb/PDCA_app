@@ -19,7 +19,6 @@ const User=loader.database.define('users',{
   },
   mail:{
     type:Sequelize.STRING,
-    allowNull:true,
     unique:true
   },
   password_hash:{
