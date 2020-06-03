@@ -197,5 +197,15 @@ router.post('/Mission/:MissionId/Solution/:SolutionId/log',function(req,res){
     res.status(500).json('log create failed')
   })
 })
+router.put('/Mission/:MissionId/Solution/:SolutionId/log',function(req,res){
+  var solution_id=req.params.SolutionId
+  var data=req.body;
+  SLFunctions.EditSolutionlog(solution_id,data).then((result)=>{
+    res.status(201).json({solution_logs:result});
+  }).catch((err)=>{
+    console.log(err);
+    res.status(500).json('log create failed')
+  })
+})
 
 module.exports = router;

@@ -30,6 +30,7 @@ function EditSolutionlog(solution_id,data){
     SolutionLog.upsert({
       solution_id:solution_id,
       index:index,
+      date:data.date,
       time:data.time,
       memo:data.memo,
       done:data.done,
