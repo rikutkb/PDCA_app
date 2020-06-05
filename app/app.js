@@ -10,7 +10,7 @@ DBInitilizer.Initialize(app);
 Auth.initialize(app);
 Auth.SetStrategy();
 app.use(cors())
-const csurf=require('csurf')
+//const csurf=require('csurf')
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -19,7 +19,7 @@ app.set( 'superSecret',  process
 var port = process.env.PORT || 8000;
 
 var v1Router = require('./routes/v1/index');
-app.use(csurf());
+//app.use(csurf());
 app.use('/api/v1', v1Router);
 
 //サーバ起動
