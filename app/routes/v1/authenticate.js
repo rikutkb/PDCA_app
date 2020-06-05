@@ -36,12 +36,11 @@ function(req,res){
 )
 
 router.post('/',(req,res)=>{
-  var post_mail=req.body.mail;
-
+  var post_user_name=req.body.user_name;
   var post_pass=req.body.pass;
   User.findOne({
     where:{
-      mail:post_mail
+      user_name:post_user_name
     }
   }).then((user)=>{
     if(user){

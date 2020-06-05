@@ -11,10 +11,9 @@ router.post('/new',function(req,res){
   bcrypt.hash(password,saltRounds,function(err,hash){
     User.findOne({
       where:{
-        mail:req.body.mail
+        user_name:req.body.user_name
       }
     }).then((user)=>{
-      console.log(user)
       if(user===null){
 
         User.create({
@@ -33,7 +32,7 @@ router.post('/new',function(req,res){
         })
 
       }else{
-        res.status(409).send("mail addres is already used");
+        res.status(409).send("username is already used");
       }
     })
   })
