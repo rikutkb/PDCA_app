@@ -32,7 +32,7 @@ class Authenticator{
       callbackURL: `${process.env.URL_PATH}/authenticate/twitter/callback`,
       scope: ['email', 'profile'],
     }
-    passport.use(new GoogleStrategy({
+/*    passport.use(new GoogleStrategy({
       clientID: process.env.GOOGLE_APP_ID,
       clientSecret: process.env.GOOGLE_SECRET,
       callbackURL: `${process.env.URL_PATH}/authenticate/google/callback`,
@@ -44,7 +44,7 @@ class Authenticator{
         return cb(err, user);
       });
     }
-    ));
+    ));*/
     passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
       User.findOne({
         where:{

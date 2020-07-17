@@ -19,7 +19,6 @@ app.set( 'superSecret',  process
 var port = process.env.PORT || 8000;
 
 var v1Router = require('./routes/v1/index');
-app.use(csurf());
 app.use('/api/v1', v1Router);
 
 //サーバ起動
