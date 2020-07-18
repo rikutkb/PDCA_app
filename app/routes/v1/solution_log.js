@@ -60,9 +60,10 @@ function GetSolutionlogs(solution_id){
     SolutionLog.findAll({
       where:{
         solution_id:solution_id
-      }
+      },
+      sort:['"date" ASC']
     }).then((solution_logs)=>{
-      console.log(solution_logs)
+
       resolve(solution_logs)
     })
   })
