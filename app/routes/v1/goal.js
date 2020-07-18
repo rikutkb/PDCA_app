@@ -83,12 +83,10 @@ router.put('/:GoalId',function(req,res){
 router.post('/',function(req,res){
   var user_id=req.user.dataValues.user_id;
   var updatedAt=new Date();
-  console.log(req.body)
   var goal_name=req.body.goal_name.slice(0,255);
   var gap=req.body.gap.slice(0,255);
   var unit=req.body.unit.slice(0,255);
   var current=req.body.current.slice(0,255);
-  console.log(user_id);
   if(user_id){
     var goalId=uuid.v4();
     Goal.create({
@@ -169,48 +167,54 @@ router.delete('/:GoalId',function(req,res){
   var goal_id=req.params.GoalId;
   var mission_id_list=[];
   CPFunction.CheckPermissionGoal(goal_id,req.body.user_id).then((result)=>{
-    if(result>300)res.status(result).send('');
-    Mission.findAll({
-      where:{
-        goal_id:goal_id
-      }
-    }).then((missions)=>{
-      missions.map((mission)=>mission_id_list.push(mission.mission_id))
-    }).then(()=>{
-      var promises=[]
-      promises.push(
-        Mission.destroy({
-          where:{
-            goal_id:goal_id
-          }
-      }))
-      promises.push(
-        Goal.destroy({
-          where:{
-            goal_id:goal_id
-          }
-        })
-      )
-      promises.push(
-        GoalUser.destroy({
-          where:{
-            goal_id:goal_id
-          }
-        })
-      )
-      mission_id_list.forEach((mission_id)=>{
+    if(result>300){
+      res.status(result).send('');
+      
+    }
+    else{
+      Mission.findAll({
+        where:{
+          goal_id:goal_id
+        }
+      }).then((missions)=>{
+        missions.map((mission)=>mission_id_list.push(mission.mission_id))
+      }).then(()=>{
+        var promises=[]
         promises.push(
-          Solution.destroy({
+          Mission.destroy({
             where:{
-              mission_id:mission_id
+              goal_id:goal_id
+            }
+        }))
+        promises.push(
+          Goal.destroy({
+            where:{
+              goal_id:goal_id
             }
           })
         )
+        promises.push(
+          GoalUser.destroy({
+            where:{
+              goal_id:goal_id
+            }
+          })
+        )
+        mission_id_list.forEach((mission_id)=>{
+          promises.push(
+            Solution.destroy({
+              where:{
+                mission_id:mission_id
+              }
+            })
+          )
+        })
+        Promise.all(promises).then(()=>{
+          res.status(201).send('Goal delete finished')
+        })
       })
-      Promise.all(promises).then(()=>{
-        res.status(201).send('Goal delete finished')
-      })
-    })
+    }
+
   
   })
 
