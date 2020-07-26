@@ -189,8 +189,8 @@ router.get('/Mission/:MissionId/Solution/:SolutionId/log',function(req,res){
 router.post('/Mission/:MissionId/Solution/:SolutionId/log',function(req,res){
   var solution_id=req.params.SolutionId
   var data=req.body;
-  var date_=data.date;
-  var date=new Date(date_.getFullYear(),date_.getMonth(),date_.getDate);
+  var date_=new Date(data.date);
+  var date=new Date(date_.getFullYear(),date_.getMonth(),date_.getDate());
   data.date=date;
   SLFunctions.PostSolutionlog(solution_id,data).then((result)=>{
     res.status(201).json({solution_logs:result});

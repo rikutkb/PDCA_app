@@ -9,7 +9,8 @@ function PostSolutionlog(solution_id,data){
 
     SolutionLog.findOne({
       where:{
-        date:data.date
+        date:data.date,
+        solution_id:solution_id,
       }
     }).then((Solutionlog_)=>{
       if(Solutionlog_==null){
