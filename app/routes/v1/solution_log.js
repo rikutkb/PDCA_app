@@ -6,21 +6,49 @@ var SolutionLog=require('../../models/solution_log')
 function PostSolutionlog(solution_id,data){
   return new Promise(function(resolve,reject){
     console.log(data)
-    SolutionLog.create({
-      solution_id:solution_id,
-      date:data.date,
-      time:data.time,
-      memo:data.memo,
-      done:data.done,
-      postponed:data.postponed,
-      progress:data.progress,
-      reason:data.reason,
+
+    SolutionLog.findOne({
+      where:{
+        date:data.date
+      }
+    }).then((Solutionlog_)=>{
+      if(Solutionlog_==null){
+        SolutionLog.create({
+          solution_id:solution_id,
+          date:data.date,
+          time:data.time,
+          memo:data.memo,
+          done:data.done,
+          postponed:data.postponed,
+          progress:data.progress,
+          reason:data.reason,
+          
+        }).then((solution_log)=>{
+          resolve(solution_log.dataValues)
+        }).catch((err)=>{
+          resolve(err)
+        })
+      }else{
+        var index=Solutionlog_.index;
+        SolutionLog.upsert({
+          solution_id:solution_id,
+          index:index,
+          date:data.date,
+          time:data.time,
+          memo:data.memo,
+          done:data.done,
+          postponed:data.postponed,
+          progress:data.progress,
+          reason:data.reason
       
-    }).then((solution_log)=>{
-      resolve(solution_log.dataValues)
-    }).catch((err)=>{
-      resolve(err)
+        }).then((solutionlog)=>{
+          resolve(solutionlog.dataValues)
+        }).catch((err)=>{
+          resolve(err);
+        })
+      }
     })
+
   })
 }
 
@@ -61,7 +89,9 @@ function GetSolutionlogs(solution_id){
       where:{
         solution_id:solution_id
       },
-      sort:['"date" ASC']
+      order:[
+        ['date','DESC']
+      ]
     }).then((solution_logs)=>{
 
       resolve(solution_logs)
